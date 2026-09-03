@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0705" />
+  <title>MAISON NOIR · Haute Parfumerie</title>
+  <meta name="description" content="MAISON NOIR — an immersive haute parfumerie. Enter the essence." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- ===================== LOADER ===================== -->
+  <div id="loader" class="loader" aria-hidden="true">
+    <div class="loader__inner">
+      <div class="loader__mark">MN</div>
+      <div class="loader__brand">MAISON&nbsp;NOIR</div>
+      <div class="loader__bar"><span id="loaderBar" class="loader__fill"></span></div>
+      <div class="loader__pct"><span id="loaderPct">0</span><i>%</i></div>
+      <div class="loader__hint">Preparing the essence</div>
+    </div>
+  </div>
+
+  <!-- ===================== WEBGL STAGE ===================== -->
+  <canvas id="webgl" aria-hidden="true"></canvas>
+  <div id="grain" class="grain" aria-hidden="true"></div>
+  <div id="vignette" class="vignette" aria-hidden="true"></div>
+
+  <!-- ===================== NAV ===================== -->
+  <header id="nav" class="nav">
+    <a href="#top" class="nav__logo" aria-label="Maison Noir home">MAISON&nbsp;NOIR</a>
+    <nav class="nav__links">
+      <a href="#collection">Collection</a>
+      <a href="#craft">Maison</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="nav__cart" id="navCart" data-cart-open aria-label="Open your selection">
+      <span class="nav__cart-label">Selection</span>
+      <span class="nav__cart-count" data-cart-count>0</span>
+    </button>
+  </header>
+
+  <main id="top">
+    <!-- ===================== SCROLL STAGE (drives 3D) ===================== -->
+    <section class="stage" id="stage">
+      <!-- Beat 1 -->
+      <div class="beat beat--intro" data-beat="0">
+        <p class="eyebrow">Haute Parfumerie · Est. 1921</p>
+        <h1 class="display">
+          <span>The Art</span>
+          <span class="italic">of Scent</span>
+        </h1>
+        <p class="lede">An olfactory descent into the heart of the flacon. Scroll to enter the essence.</p>
+        <div class="scroll-cue"><span></span>Scroll</div>
+      </div>
+
+      <!-- Beat 2 -->
+      <div class="beat beat--center" data-beat="1">
+        <p class="eyebrow light">Chapter I</p>
+        <h2 class="headline">The seal releases</h2>
+        <p class="beat__sub">Hand-poured crystal, unstopped. A single breath of the maison escapes.</p>
+      </div>
+
+      <!-- Beat 3 -->
+      <div class="beat beat--center" data-beat="2">
+        <p class="eyebrow light">Chapter II</p>
+        <h2 class="headline">The mouth opens</h2>
+        <p class="beat__sub">The camera rises above the rim. Below, the neck of the flacon and the glow of the liquid within.</p>
+      </div>
+
+      <!-- Beat 4 -->
+      <div class="beat beat--center" data-beat="3">
+        <p class="eyebrow gold">Chapter III</p>
+        <h2 class="headline gold-text">Inside the essence</h2>
+        <p class="beat__sub">You are within the perfume now — suspended in liquid gold and slow-turning light.</p>
+      </div>
+    </section>
+
+    <!-- ===================== COLLECTION INTRO ===================== -->
+    <section class="intro-collection" id="collection">
+      <div class="section-head">
+        <p class="eyebrow gold">The Collection · Twelve Signatures</p>
+        <h2 class="section-title">Compositions for<br /><span class="italic">every hour of the day</span></h2>
+        <p class="section-lede">Each fragrance is a chapter. Explore twelve rare compositions, blended in Grasse and aged in oak. Reveal each as you descend.</p>
+      </div>
+    </section>
+
+    <!-- ===================== SIGNATURE SHOWCASE (real flacon) ===================== -->
+    <section class="signature" id="signature">
+      <div class="signature__media" data-parallax>
+        <div class="signature__glow"></div>
+        <img class="signature__img" src="assets/img/flacon-hero.jpg" alt="Maison Noir signature flacon — crystal bottle with gold sphere cap" loading="lazy" decoding="async" />
+      </div>
+      <div class="signature__text">
+        <p class="eyebrow gold">The Signature</p>
+        <h2 class="section-title">Ambre<br /><span class="italic">Solaire</span></h2>
+        <p class="signature__lede">The very flacon you just travelled through — hand-cut crystal, a gold sphere seal, and molten amber rested ninety days. The defining accord of the maison.</p>
+        <div class="signature__row">
+          <span class="product__price">$390 <span>/ 100ml</span></span>
+          <button class="btn btn--gold" data-detail="noir-6">Discover the signature</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PRODUCTS (injected) ===================== -->
+    <section class="products" id="products" aria-label="Perfume collection"></section>
+
+    <!-- ===================== CONTINUOUS OUTRO (over the liquid) ===================== -->
+    <section class="outro" id="craft">
+      <div class="outro__inner">
+        <p class="eyebrow gold">The Maison · Grasse, 1921</p>
+        <h2 class="outro__title">You have travelled to the<br /><span class="italic">heart of the scent</span></h2>
+        <p class="outro__lede">Every Maison Noir flacon is filled by hand, sealed under candlelight, and rested ninety days before it earns the noir mark. What you just moved through is where it begins.</p>
+        <div class="outro__stats">
+          <div><strong>103</strong><span>years</span></div>
+          <div><strong>28</strong><span>perfumers</span></div>
+          <div><strong>90</strong><span>days aged</span></div>
+        </div>
+        <button class="btn btn--gold" data-scroll="#products">Return to the collection</button>
+      </div>
+      <footer class="mini-footer" id="contact">
+        <span class="mini-footer__logo">MAISON&nbsp;NOIR</span>
+        <span class="mini-footer__legal">© 2026 · Haute parfumerie · An immersive experience</span>
+        <span class="mini-footer__links"><a href="#products">Collection</a><a href="#top">Top</a></span>
+      </footer>
+    </section>
+  </main>
+
+  <!-- ===================== CHECKOUT MODAL ===================== -->
+  <div class="checkout" id="checkout" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="checkout__scrim" data-close></div>
+    <div class="checkout__panel" role="document">
+      <button class="checkout__close" data-close aria-label="Close checkout">&times;</button>
+      <div class="checkout__body">
+        <!-- FORM -->
+        <form class="checkout__form" id="checkoutForm" novalidate>
+          <p class="eyebrow gold">Secure Order</p>
+          <h3 class="checkout__title" id="checkoutTitle">Complete your order</h3>
+
+          <div class="field">
+            <label for="c_name">Full name</label>
+            <input id="c_name" name="name" type="text" autocomplete="name" required placeholder="Aria Laurent" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="c_phone">Phone number</label>
+              <input id="c_phone" name="phone" type="tel" autocomplete="tel" required placeholder="+1 555 019 2831" />
+            </div>
+            <div class="field">
+              <label for="c_email">Email</label>
+              <input id="c_email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="c_address">Complete address</label>
+            <input id="c_address" name="address" type="text" autocomplete="street-address" required placeholder="14 Rue Saint-Honoré, Apt 3" />
+          </div>
+          <div class="field">
+            <label for="c_city">City</label>
+            <input id="c_city" name="city" type="text" autocomplete="address-level2" required placeholder="Paris" />
+          </div>
+
+          <fieldset class="pay">
+            <legend>Payment method</legend>
+            <label class="pay__opt">
+              <input type="radio" name="payment" value="Cash on Delivery" checked />
+              <span class="pay__mark"></span>
+              <span class="pay__text"><strong>Cash on Delivery</strong><em>Pay in cash when your flacon arrives.</em></span>
+            </label>
+            <label class="pay__opt">
+              <input type="radio" name="payment" value="Bank Transfer" />
+              <span class="pay__mark"></span>
+              <span class="pay__text"><strong>Bank Transfer</strong><em>Transfer details are sent after you confirm.</em></span>
+            </label>
+            <label class="pay__opt">
+              <input type="radio" name="payment" value="Credit / Debit Card" />
+              <span class="pay__mark"></span>
+              <span class="pay__text"><strong>Credit / Debit Card</strong><em>Visa · Mastercard · Amex, at delivery.</em></span>
+            </label>
+          </fieldset>
+
+          <button type="submit" class="btn btn--gold checkout__submit">Confirm order</button>
+          <p class="checkout__note">This is a design demonstration. No payment is processed and no data leaves your browser.</p>
+        </form>
+
+        <!-- SUMMARY -->
+        <aside class="checkout__summary">
+          <p class="eyebrow gold">Order Summary</p>
+          <div class="summary__list" id="sumList"></div>
+          <div class="summary__lines">
+            <div class="summary__line"><span>Subtotal</span><span id="sumSub">—</span></div>
+            <div class="summary__line"><span>Shipping</span><span>Complimentary</span></div>
+            <div class="summary__line summary__line--total"><span>Total</span><span id="sumTotal">—</span></div>
+          </div>
+          <div class="summary__seal">
+            <span class="summary__seal-mark">MN</span>
+            <p>Hand-sealed under the noir mark · 90-day maturation guaranteed.</p>
+          </div>
+        </aside>
+
+        <!-- SUCCESS -->
+        <div class="checkout__success" id="checkoutSuccess" aria-hidden="true">
+          <div class="success__seal">MN</div>
+          <h3>Order confirmed</h3>
+          <p id="successMsg">Thank you. Your fragrance is being prepared.</p>
+          <div class="success__ref">Order ref · <strong id="successRef">MN-000000</strong></div>
+          <button class="btn btn--ghost" data-close>Continue exploring</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PRODUCT DETAIL (immersive) ===================== -->
+  <div class="detail" id="detail" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="detailName">
+    <div class="detail__scrim" data-detail-close></div>
+    <div class="detail__inner" role="document">
+      <button class="detail__close" data-detail-close aria-label="Close">&times;</button>
+      <div class="detail__stage">
+        <video class="detail__video" id="detailVideo" muted loop playsinline preload="none" aria-hidden="true"></video>
+        <div class="detail__halo" id="detailHalo"></div>
+        <div class="detail__bottle" id="detailBottle" data-float></div>
+      </div>
+      <div class="detail__panel">
+        <p class="eyebrow gold" id="detailCat">Eau de Parfum</p>
+        <h2 class="detail__name" id="detailName">—</h2>
+        <p class="detail__tag" id="detailTag">—</p>
+        <p class="detail__desc" id="detailDesc">—</p>
+        <div class="detail__notes" id="detailNotes"></div>
+
+        <div class="opt">
+          <span class="opt__label">Bottle colour · <b id="colorName">Signature</b></span>
+          <div class="swatches" id="colorSwatches"></div>
+        </div>
+        <div class="opt">
+          <span class="opt__label">Cap style · <b id="capName">Classic</b></span>
+          <div class="caps" id="capOptions"></div>
+        </div>
+
+        <div class="detail__foot">
+          <div class="opt opt--qty">
+            <span class="opt__label">Quantity</span>
+            <div class="stepper stepper--dark">
+              <button type="button" class="stepper__btn" data-dqty="-1" aria-label="Decrease">−</button>
+              <input id="detailQty" type="number" min="1" max="99" value="1" inputmode="numeric" />
+              <button type="button" class="stepper__btn" data-dqty="1" aria-label="Increase">+</button>
+            </div>
+          </div>
+          <div class="detail__price"><span id="detailPrice">$0</span> <em>/ 100ml</em></div>
+        </div>
+        <div class="detail__actions">
+          <button class="btn btn--ghost" id="detailAddCart">Add to Cart</button>
+          <button class="btn btn--gold" id="detailBuy">Order Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CART ===================== -->
+  <div class="cart" id="cart" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Your selection">
+    <div class="cart__scrim" data-cart-close></div>
+    <aside class="cart__panel">
+      <div class="cart__head">
+        <h3>Your Selection</h3>
+        <button class="detail__close" data-cart-close aria-label="Close">&times;</button>
+      </div>
+      <div class="cart__list" id="cartList"></div>
+      <div class="cart__foot">
+        <div class="cart__total"><span>Subtotal</span><span id="cartTotal">$0</span></div>
+        <button class="btn btn--gold" id="cartCheckout" disabled>Checkout</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+  <script type="module" src="js/products.js?v=6"></script>
+  <script type="module" src="js/scene.js?v=6"></script>
+  <script type="module" src="js/checkout.js?v=6"></script>
+  <script type="module" src="js/shop.js?v=6"></script>
+  <script type="module" src="js/main.js?v=6"></script>
+</body>
+</html>
