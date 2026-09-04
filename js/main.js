@@ -112,7 +112,7 @@ ST.create({
   trigger: "#stage",
   start: "top top",
   end: "bottom bottom",
-  scrub: true,
+  scrub: 0.6,               // slight catch-up = buttery, frame-independent hero motion
   onUpdate: (self) => {
     const p = self.progress;
     if (window.MNScene) window.MNScene.setProgress(p);
