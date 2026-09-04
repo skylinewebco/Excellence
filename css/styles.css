@@ -137,7 +137,10 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
   z-index: 0; display:block; pointer-events:none;
 }
 .grain{
-  position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+  position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.045;
+  /* no mix-blend-mode: blending a fullscreen layer forces per-frame recompositing
+     of the animated scene beneath it — a major scroll-lag source. Plain overlay at
+     low opacity looks the same and is essentially free. */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .vignette{
@@ -303,13 +306,12 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
 }
 .product__info{
   will-change: transform, opacity;
-  background: rgba(12,9,6,.32);
-  backdrop-filter: blur(16px) saturate(1.15);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
-  border:1px solid rgba(244,239,230,.1);
+  /* solid translucent glass (no live backdrop-blur) — readable text + smooth scroll */
+  background: linear-gradient(155deg, rgba(22,15,9,.9), rgba(9,6,4,.94));
+  border:1px solid rgba(244,239,230,.14);
   border-radius: 20px;
   padding: clamp(26px,3vw,44px);
-  box-shadow: 0 40px 90px -40px rgba(0,0,0,.65);
+  box-shadow: 0 40px 90px -40px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .product__cat{
   font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold-soft);
@@ -318,7 +320,7 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
   font-family:var(--serif); font-size:clamp(34px,4.6vw,68px); line-height:1.02; margin:12px 0 8px; font-weight:400;
 }
 .product__tag{ font-family:var(--serif); font-style:italic; font-size:clamp(16px,1.6vw,22px); color:var(--stone); margin-bottom:20px; }
-.product__desc{ max-width:44ch; color:rgba(244,239,230,.7); margin-bottom:24px; font-size:clamp(14px,1.1vw,16px); }
+.product__desc{ max-width:44ch; color:rgba(244,239,230,.86); margin-bottom:24px; font-size:clamp(14px,1.1vw,16px); }
 .product__notes{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
 .note-chip{
   font-size:11px; letter-spacing:.12em; text-transform:uppercase;
@@ -330,14 +332,13 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
 
 /* Light-glass panels for light/dark rhythm inside the same liquid world */
 .product.is-light .product__info{
-  background: rgba(250,246,238,.66);
-  backdrop-filter: blur(18px) saturate(1.1);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
-  border-color: rgba(26,22,17,.12);
+  background: linear-gradient(155deg, rgba(252,249,242,.96), rgba(243,237,226,.98));
+  border-color: rgba(26,22,17,.14);
   color: var(--ink);
+  box-shadow: 0 40px 90px -40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.6);
 }
 .product.is-light .product__name{ color: var(--ink); }
-.product.is-light .product__desc{ color: rgba(26,22,17,.74); }
+.product.is-light .product__desc{ color: rgba(26,22,17,.82); }
 .product.is-light .product__idx{ color: rgba(244,239,230,.08); }
 .product.is-light .note-chip{ border-color: var(--line-light); color: rgba(26,22,17,.72); }
 .product.is-light .product__price{ color: var(--ink); }
@@ -376,10 +377,8 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
 }
 .outro__inner{
   max-width: 760px; margin:0 auto;
-  background: rgba(10,7,5,.34);
-  backdrop-filter: blur(18px) saturate(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
-  border:1px solid rgba(244,239,230,.1); border-radius:24px;
+  background: linear-gradient(155deg, rgba(18,12,7,.9), rgba(9,6,4,.94));
+  border:1px solid rgba(244,239,230,.12); border-radius:24px;
   padding: clamp(40px,6vw,72px);
   box-shadow: 0 50px 100px -50px rgba(0,0,0,.7);
 }
@@ -635,9 +634,7 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
   .detail__inner{ grid-template-columns:1fr; grid-template-rows: 40% 60%; height:92vh; width:94vw; }
   .detail__stage{ border-bottom:1px solid var(--line-dark); }
   .detail__bottle{ width:min(48%,180px); }
-  /* lighter blur on mobile GPUs */
-  .product__info, .outro__inner{ backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); background:rgba(12,9,6,.5); }
-  .product.is-light .product__info{ background:rgba(250,246,238,.82); }
+  /* keep overlays cheap on mobile GPUs */
   .detail__inner{ backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 }
 @media (max-width: 560px){
@@ -670,8 +667,11 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
   animation: floatY 7.5s var(--ease) infinite;
   filter: drop-shadow(0 40px 70px rgba(0,0,0,.6));
 }
-.signature__lede{ color:rgba(244,239,230,.82); max-width:46ch; margin:22px 0 32px; font-size:clamp(15px,1.2vw,18px); }
+.signature__lede{ color:rgba(244,239,230,.9); max-width:46ch; margin:22px 0 32px; font-size:clamp(15px,1.2vw,18px); }
 .signature__row{ display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
+/* legibility for text that sits directly over the liquid (no panel) */
+.signature__text > *, .intro-collection .section-head > *{ text-shadow: 0 2px 26px rgba(0,0,0,.6); }
+.intro-collection .section-lede{ color: rgba(244,239,230,.9); }
 
 /* ============================================================
    DETAIL STAGE VIDEO (real amber macro behind the flacon)
@@ -689,4 +689,114 @@ button{ font-family:inherit; cursor:pointer; border:none; background:none; color
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.15s !important; }
+  html{ scroll-behavior:auto !important; }
+}
+
+/* ============================================================
+   ENHANCEMENTS — premium micro-interactions, motion, a11y
+   (additive layer — nothing above is overridden destructively)
+   ============================================================ */
+
+/* ---- Accessibility: coherent gold focus ring (keyboard only) ---- */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible{
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.swatch:focus-visible{ outline-offset: 4px; }
+/* don't double-draw the ring on inputs that already glow */
+.field input:focus-visible, .field select:focus-visible{ outline-offset: 1px; }
+
+/* ---- Scroll progress (thin gold rule, GPU-composited) ---- */
+.scroll-progress{
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  z-index: 65; pointer-events: none; background: transparent;
+}
+.scroll-progress > i{
+  display: block; height: 100%; width: 100%;
+  transform: scaleX(0); transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-soft) 60%, var(--gold));
+  box-shadow: 0 0 12px var(--gold-glow);
+  will-change: transform;
+}
+
+/* ---- Gold button: specular sweep on hover ---- */
+.btn--gold::after{
+  content:""; position:absolute; top:0; bottom:0; left:-130%;
+  width: 55%; transform: skewX(-18deg); pointer-events:none;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.5), transparent);
+  transition: left .7s var(--ease-out); z-index:1;
+}
+.btn--gold:hover::after{ left: 150%; }
+.btn--gold > *{ position:relative; z-index:2; }
+
+/* ---- Product bottle: warm glow on hover (filter-only, no transform conflict) ---- */
+.product__bottle{ transition: transform .6s var(--ease), filter .55s var(--ease); }
+.product__visual:hover .product__bottle{
+  filter: drop-shadow(0 46px 78px rgba(0,0,0,.62)) brightness(1.06) saturate(1.05);
+}
+.product__visual:hover .product__idx{ color: rgba(244,239,230,.09); transition: color .5s var(--ease); }
+
+/* ---- Note chips: tactile hover ---- */
+.note-chip{ transition: border-color .3s, color .3s, background .3s, transform .3s var(--ease); }
+.note-chip:hover{ border-color: var(--gold-soft); color: var(--gold-soft); transform: translateY(-2px); }
+.product.is-light .note-chip:hover{ border-color: var(--gold-deep); color: var(--gold-deep); }
+
+/* ---- Swatch / cap: springier feedback ---- */
+.swatch, .cap-opt{ transition: transform .35s var(--ease-out), border-color .3s, background .3s, color .3s; }
+
+/* ---- Cart count: pop when an item is added ---- */
+@keyframes countBump{ 0%{ transform:scale(1); } 42%{ transform:scale(1.55); } 100%{ transform:scale(1); } }
+.nav__cart-count.bump{ animation: countBump .5s var(--ease-out); }
+
+/* ---- Magnetic CTAs get a soft transition baseline (JS drives x/y) ---- */
+.btn--gold, .nav__cart{ transition: transform .5s var(--ease-out), box-shadow .5s var(--ease), color .4s, background .4s; }
+
+/* ============================================================
+   MOBILE NAVIGATION (progressive — links no longer vanish)
+   ============================================================ */
+.nav__actions{ display:flex; align-items:center; gap: clamp(10px,1.6vw,16px); }
+.nav__toggle{
+  display:none; width:44px; height:44px; border-radius:50%;
+  border:1px solid currentColor; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  transition: background .35s var(--ease), transform .35s var(--ease);
+}
+.nav__toggle span{
+  display:block; width:18px; height:1.5px; background: currentColor; border-radius:2px;
+  transition: transform .35s var(--ease-out), opacity .25s var(--ease);
+}
+.nav__toggle.is-open span:nth-child(1){ transform: translateY(6.5px) rotate(45deg); }
+.nav__toggle.is-open span:nth-child(2){ opacity:0; }
+.nav__toggle.is-open span:nth-child(3){ transform: translateY(-6.5px) rotate(-45deg); }
+
+.nav-mobile{
+  position: fixed; inset:0; z-index:50; visibility:hidden;
+  background: radial-gradient(120% 120% at 50% 30%, rgba(23,19,16,.96), rgba(10,7,5,.98));
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  opacity:0; transition: opacity .5s var(--ease), visibility .5s;
+  display:flex; align-items:center; justify-content:center;
+}
+.nav-mobile.is-open{ visibility:visible; opacity:1; }
+.nav-mobile__links{ display:flex; flex-direction:column; align-items:center; gap: clamp(22px,5vh,44px); }
+.nav-mobile__links a{
+  font-family: var(--serif); font-size: clamp(34px,10vw,58px); font-weight:400;
+  color: var(--ivory); letter-spacing:.01em; position:relative;
+  opacity:0; transform: translateY(22px); transition: color .3s var(--ease);
+}
+.nav-mobile.is-open .nav-mobile__links a{ animation: mobileLinkIn .6s var(--ease-out) forwards; }
+.nav-mobile.is-open .nav-mobile__links a:nth-child(1){ animation-delay:.10s; }
+.nav-mobile.is-open .nav-mobile__links a:nth-child(2){ animation-delay:.18s; }
+.nav-mobile.is-open .nav-mobile__links a:nth-child(3){ animation-delay:.26s; }
+.nav-mobile__links a:hover{ color: var(--gold-soft); }
+.nav-mobile__foot{
+  position:absolute; bottom: clamp(28px,6vh,54px); left:0; right:0; text-align:center;
+  font-size:11px; letter-spacing:.32em; text-transform:uppercase; color: var(--stone);
+}
+@keyframes mobileLinkIn{ to{ opacity:1; transform:none; } }
+
+@media (max-width: 900px){
+  .nav__toggle{ display:inline-flex; }
+}
+@media (min-width: 901px){
+  .nav-mobile{ display:none; }
 }

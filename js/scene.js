@@ -36,15 +36,16 @@ const CAM = [
 
 function init() {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile, alpha: false, powerPreference: "high-performance", stencil: false });
-  renderer.setClearColor(0x080604, 1);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.6 : 2));
+  renderer.setClearColor(0x0e0a06, 1);                       // warm base so bottle + liquid share one palette
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.4 : 1.75)); // transmission is DPR-bound: lower = far smoother
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 1.18;
   renderer.autoClear = false;
 
   mainScene = new THREE.Scene();
+  mainScene.fog = new THREE.FogExp2(0x1a0e05, 0.028);        // warm haze unifies bottle, liquid & background
   camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.03, 100);
 
   buildEnvironment();
@@ -95,6 +96,21 @@ function buildEnvironment() {
 /* -------------------- hollow glass flacon -------------------- */
 function v2(a){ return a.map(([x,y]) => new THREE.Vector2(x, y)); }
 
+function makeCapPlateTexture(){
+  const c = document.createElement("canvas"); c.width = 512; c.height = 168;
+  const x = c.getContext("2d");
+  x.clearRect(0,0,512,168);
+  x.strokeStyle = "rgba(70,52,18,.85)"; x.lineWidth = 4;
+  x.strokeRect(24,44,464,80);
+  x.fillStyle = "rgba(58,42,14,.92)";
+  x.font = "600 52px 'Cormorant Garamond', Georgia, serif";
+  x.textAlign = "center"; x.textBaseline = "middle";
+  x.letterSpacing = "8px";
+  x.fillText("MAISON NOIR", 256, 88);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+
 function buildBottle() {
   bottleGroup = new THREE.Group();
   mainScene.add(bottleGroup);
@@ -114,8 +130,9 @@ function buildBottle() {
   const glassGeo = new THREE.LatheGeometry(profile, seg);
   glassGeo.computeVertexNormals();
   const glassMat = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff, metalness: 0, roughness: 0.03,
+    color: 0xfff4e6, metalness: 0, roughness: 0.03,
     transmission: 1.0, thickness: 0.9, ior: 1.5,
+    attenuationColor: new THREE.Color(0xd98a3c), attenuationDistance: 3.2, // light picks up warm amber through the glass
     envMapIntensity: 1.6, clearcoat: 1, clearcoatRoughness: 0.05,
     transparent: true, opacity: 1, side: THREE.DoubleSide, depthWrite: false
   });
@@ -128,9 +145,9 @@ function buildBottle() {
   ]);
   const liqGeo = new THREE.LatheGeometry(liqProfile, seg);
   liquidMesh = new THREE.Mesh(liqGeo, new THREE.MeshPhysicalMaterial({
-    color: 0x8a3d10, metalness: 0, roughness: 0.25,
-    transmission: 0.55, thickness: 3.0, ior: 1.38,
-    emissive: 0x5a2a06, emissiveIntensity: 0.5,
+    color: 0xa04f14, metalness: 0, roughness: 0.22,
+    transmission: 0.5, thickness: 3.0, ior: 1.38,
+    emissive: 0x6a3208, emissiveIntensity: 0.62,
     envMapIntensity: 1.0, transparent: true, opacity: 1
   }));
   bottleGroup.add(liquidMesh);
@@ -148,6 +165,13 @@ function buildBottle() {
   const capMat = new THREE.MeshStandardMaterial({ color: 0xc9a24b, metalness: 1, roughness: 0.28, envMapIntensity: 1.7 });
   const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.62, seg, seg), capMat);
   sphere.position.y = 2.95;
+  // engraved MAISON NOIR plate on the cap front (echoes the reference flacon)
+  const plate = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.62, 0.2),
+    new THREE.MeshBasicMaterial({ map: makeCapPlateTexture(), transparent: true, depthWrite: false })
+  );
+  plate.position.set(0, 2.98, 0.6);
+  capGroup.add(plate);
   const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.44, 0.34, seg),
     new THREE.MeshStandardMaterial({ color: 0x9c7a2e, metalness: 1, roughness: 0.34 }));
   collar.position.y = 2.4;
@@ -159,7 +183,7 @@ function buildBottle() {
 
 /* -------------------- essence particles -------------------- */
 function buildParticles() {
-  const count = isMobile ? 300 : 900;
+  const count = isMobile ? 170 : 520;
   const geo = new THREE.BufferGeometry();
   const pos = new Float32Array(count * 3), seed = new Float32Array(count);
   for (let i = 0; i < count; i++) {
@@ -265,7 +289,7 @@ function addLights() {
 function onMouse(e){ tMouseX = e.clientX/innerWidth-0.5; tMouseY = e.clientY/innerHeight-0.5; }
 function onResize(){
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.6 : 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.4 : 1.75));
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
   bgMesh.material.uniforms.uRes.value.set(innerWidth, innerHeight);
 }

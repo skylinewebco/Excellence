@@ -28,6 +28,9 @@
   <div id="grain" class="grain" aria-hidden="true"></div>
   <div id="vignette" class="vignette" aria-hidden="true"></div>
 
+  <!-- ===================== SCROLL PROGRESS ===================== -->
+  <div id="scrollProgress" class="scroll-progress" aria-hidden="true"><i></i></div>
+
   <!-- ===================== NAV ===================== -->
   <header id="nav" class="nav">
     <a href="#top" class="nav__logo" aria-label="Maison Noir home">MAISON&nbsp;NOIR</a>
@@ -36,11 +39,26 @@
       <a href="#craft">Maison</a>
       <a href="#contact">Contact</a>
     </nav>
-    <button class="nav__cart" id="navCart" data-cart-open aria-label="Open your selection">
-      <span class="nav__cart-label">Selection</span>
-      <span class="nav__cart-count" data-cart-count>0</span>
-    </button>
+    <div class="nav__actions">
+      <button class="nav__cart" id="navCart" data-cart-open aria-label="Open your selection">
+        <span class="nav__cart-label">Selection</span>
+        <span class="nav__cart-count" data-cart-count>0</span>
+      </button>
+      <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </header>
+
+  <!-- ===================== MOBILE MENU ===================== -->
+  <div class="nav-mobile" id="mobileMenu" aria-hidden="true">
+    <nav class="nav-mobile__links">
+      <a href="#collection">Collection</a>
+      <a href="#craft">Maison</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-mobile__foot">MAISON&nbsp;NOIR · Haute Parfumerie</div>
+  </div>
 
   <main id="top">
     <!-- ===================== SCROLL STAGE (drives 3D) ===================== -->
@@ -285,5 +303,6 @@
   <script type="module" src="js/checkout.js?v=6"></script>
   <script type="module" src="js/shop.js?v=6"></script>
   <script type="module" src="js/main.js?v=6"></script>
+  <script type="module" src="js/enhance.js?v=1"></script>
 </body>
 </html>
