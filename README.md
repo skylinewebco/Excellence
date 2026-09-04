@@ -31,6 +31,28 @@ python server.py
 Then open **http://localhost:5599**. `server.py` sends no-cache headers for clean reloads.
 (Any static server works, e.g. `python -m http.server 5599`.)
 
+## Deploy to Netlify
+
+This is a **static site with no build step**, configured for Netlify via [`netlify.toml`](netlify.toml)
+(publish directory = repository root, no build command). Deploy any of these ways:
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/skylinewebco/maison-noir)
+
+**A. One-click** — use the button above (deploys straight from this GitHub repo).
+
+**B. Connect the Git repo** — Netlify → *Add new site → Import an existing project* → pick
+`skylinewebco/maison-noir`. Leave the settings as detected; `netlify.toml` sets them:
+- **Build command:** *(none)*
+- **Publish directory:** `.` (repository root)
+
+**C. Drag-and-drop** — drag the whole project folder (it includes `netlify.toml`) onto the
+Netlify *Deploys* page.
+
+Every push to `main` auto-deploys. If a previous deploy 404'd, it was because Netlify was
+publishing a non-existent build folder — `netlify.toml` fixes that by publishing the root
+where `index.html` lives. If you had manually set a *Publish directory* in the Netlify UI,
+clear it (or set it to `.`) so it doesn't conflict.
+
 ## Structure
 ```
 index.html            markup: hero stage, collection, signature, products, outro, detail, cart, checkout
