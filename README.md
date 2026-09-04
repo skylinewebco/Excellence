@@ -36,12 +36,12 @@ Then open **http://localhost:5599**. `server.py` sends no-cache headers for clea
 This is a **static site with no build step**, configured for Netlify via [`netlify.toml`](netlify.toml)
 (publish directory = repository root, no build command). Deploy any of these ways:
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/skylinewebco/maison-noir)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/skylinewebco/Excellence)
 
 **A. One-click** — use the button above (deploys straight from this GitHub repo).
 
 **B. Connect the Git repo** — Netlify → *Add new site → Import an existing project* → pick
-`skylinewebco/maison-noir`. Leave the settings as detected; `netlify.toml` sets them:
+`skylinewebco/Excellence`. Leave the settings as detected; `netlify.toml` sets them:
 - **Build command:** *(none)*
 - **Publish directory:** `.` (repository root)
 
