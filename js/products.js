@@ -72,58 +72,62 @@ export function colorwaysFor(p){
 export function findColor(p,id){ return colorwaysFor(p).find(c=>c.id===id) || signatureColor(p); }
 export function findCap(id){ return CAP_STYLES.find(c=>c.id===id) || CAP_STYLES[0]; }
 
-/* ---------- Cap renderer (by style) ---------- */
+/* ---------- Cap renderer (by style) — metallic with specular shine ---------- */
 function renderCap(style, uid, cx, topY, capW, capH){
   const x = cx - capW/2;
   const grad = `url(#cap-${uid})`;
-  const stroke = `stroke="rgba(255,255,255,.35)" stroke-width="1"`;
+  const stroke = `stroke="rgba(255,255,255,.4)" stroke-width="1"`;
+  const shine = `<ellipse cx="${cx-capW*0.16}" cy="${topY+capH*0.3}" rx="${capW*0.15}" ry="${capH*0.2}" fill="rgba(255,255,255,.55)"/>`;
   switch(style){
     case "metallic":
       return `
         <rect x="${x}" y="${topY}" width="${capW}" height="${capH}" rx="5" fill="${grad}" ${stroke}/>
-        <rect x="${x}" y="${topY+capH*0.28}" width="${capW}" height="2" fill="rgba(0,0,0,.25)"/>
-        <rect x="${x}" y="${topY+capH*0.52}" width="${capW}" height="2" fill="rgba(0,0,0,.25)"/>
-        <rect x="${x}" y="${topY+capH*0.76}" width="${capW}" height="2" fill="rgba(0,0,0,.25)"/>
-        <rect x="${x+5}" y="${topY+4}" width="8" height="${capH-8}" rx="4" fill="rgba(255,255,255,.45)"/>`;
+        <rect x="${x}" y="${topY+capH*0.30}" width="${capW}" height="1.5" fill="rgba(0,0,0,.28)"/>
+        <rect x="${x}" y="${topY+capH*0.55}" width="${capW}" height="1.5" fill="rgba(0,0,0,.28)"/>
+        <rect x="${x}" y="${topY+capH*0.80}" width="${capW}" height="1.5" fill="rgba(0,0,0,.28)"/>
+        <rect x="${x+5}" y="${topY+4}" width="7" height="${capH-8}" rx="3" fill="rgba(255,255,255,.5)"/>${shine}`;
     case "minimal":
       return `
-        <rect x="${cx-capW*0.34}" y="${topY+capH*0.28}" width="${capW*0.68}" height="${capH*0.72}" rx="3" fill="${grad}" ${stroke} opacity=".92"/>`;
+        <rect x="${cx-capW*0.34}" y="${topY+capH*0.26}" width="${capW*0.68}" height="${capH*0.74}" rx="3" fill="${grad}" ${stroke}/>
+        <ellipse cx="${cx-capW*0.1}" cy="${topY+capH*0.5}" rx="${capW*0.08}" ry="${capH*0.22}" fill="rgba(255,255,255,.45)"/>`;
     case "luxury":
       return `
-        <rect x="${x}" y="${topY+capH*0.35}" width="${capW}" height="${capH*0.65}" rx="7" fill="${grad}" ${stroke}/>
-        <ellipse cx="${cx}" cy="${topY+capH*0.3}" rx="${capW*0.42}" ry="${capH*0.34}" fill="${grad}" ${stroke}/>
-        <ellipse cx="${cx-capW*0.12}" cy="${topY+capH*0.22}" rx="${capW*0.12}" ry="${capH*0.1}" fill="rgba(255,255,255,.6)"/>`;
+        <rect x="${x+capW*0.16}" y="${topY+capH*0.5}" width="${capW*0.68}" height="${capH*0.5}" rx="6" fill="${grad}" ${stroke}/>
+        <ellipse cx="${cx}" cy="${topY+capH*0.34}" rx="${capW*0.44}" ry="${capH*0.4}" fill="${grad}" ${stroke}/>
+        <ellipse cx="${cx-capW*0.14}" cy="${topY+capH*0.22}" rx="${capW*0.14}" ry="${capH*0.13}" fill="rgba(255,255,255,.7)"/>`;
     case "sculpted":
       return `
         <polygon points="${x},${topY+capH} ${x+capW*0.16},${topY} ${x+capW*0.84},${topY} ${x+capW},${topY+capH}" fill="${grad}" ${stroke}/>
         <line x1="${cx}" y1="${topY}" x2="${cx}" y2="${topY+capH}" stroke="rgba(255,255,255,.35)" stroke-width="1"/>
-        <line x1="${x+capW*0.16}" y1="${topY}" x2="${x}" y2="${topY+capH}" stroke="rgba(0,0,0,.2)" stroke-width="1"/>`;
+        <polygon points="${x},${topY+capH} ${x+capW*0.16},${topY} ${cx},${topY} ${cx},${topY+capH}" fill="rgba(255,255,255,.14)"/>`;
     default: // classic
       return `
         <rect x="${x}" y="${topY}" width="${capW}" height="${capH}" rx="8" fill="${grad}" ${stroke}/>
-        <rect x="${x+6}" y="${topY+5}" width="10" height="${capH-10}" rx="5" fill="rgba(255,255,255,.4)"/>`;
+        <rect x="${x+6}" y="${topY+5}" width="8" height="${capH-10}" rx="4" fill="rgba(255,255,255,.45)"/>${shine}`;
   }
 }
 
-/* ---------- Procedural flacon SVG ---------- */
+/* ---------- Realistic flacon SVG (recolorable liquid) ---------- */
 export function bottleSVG(p, opts = {}) {
   const w = opts.w || 300;
   const liquidTop = opts.a || p.liquid2;
   const liquidBot = opts.b || p.liquid;
   const capColor  = opts.cap || p.cap;
   const capStyle  = opts.capStyle || p.capStyle || "classic";
-  const idBase    = opts.idBase || (p.id + "-" + Math.random().toString(36).slice(2,7));
-  const uid = idBase;
+  const uid       = opts.idBase || (p.id + "-" + Math.random().toString(36).slice(2,7));
+  const liqId     = opts.liqId || `liq-${uid}`;
 
   const shapes = {
-    tall:   { bx:78,  by:120, bw:144, bh:210, r:14 },
-    round:  { bx:66,  by:130, bw:168, bh:190, r:70 },
-    square: { bx:74,  by:128, bw:152, bh:196, r:8 }
+    tall:   { bx:82,  by:118, bw:136, bh:214, r:16 },
+    round:  { bx:66,  by:128, bw:168, bh:196, r:64 },
+    square: { bx:76,  by:126, bw:148, bh:200, r:10 }
   };
   const s = shapes[p.shape] || shapes.tall;
-  const capW = 70, capH = 46, cx = 150, capTopY = 60;
-  const neckW = 40, neckH = 30, neckX = cx - neckW/2;
-  const liqId = opts.liqId || `liq-${uid}`;
+  const bottom = s.by + s.bh;
+  const surfaceY = s.by + s.bh * 0.34;        // liquid fill line (~66%)
+  const capW = 66, capH = 44, cx = 150, capTopY = 58;
+  const neckW = 42, neckH = 26, neckX = cx - neckW/2, collarY = s.by - 8;
+  const labY = s.by + s.bh * 0.46, labH = s.bh * 0.22, labW = s.bw * 0.62, labX = cx - labW/2;
 
   return `
   <svg class="flacon" viewBox="0 0 300 380" width="${w}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${p.name} flacon">
@@ -133,30 +137,62 @@ export function bottleSVG(p, opts = {}) {
         <stop class="liq-b" offset="100%" stop-color="${liquidBot}"/>
       </linearGradient>
       <linearGradient id="glass-${uid}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="rgba(255,255,255,.34)"/>
-        <stop offset="45%" stop-color="rgba(255,255,255,.04)"/>
-        <stop offset="100%" stop-color="rgba(255,255,255,.12)"/>
+        <stop offset="0%" stop-color="rgba(255,255,255,.4)"/>
+        <stop offset="42%" stop-color="rgba(255,255,255,.03)"/>
+        <stop offset="70%" stop-color="rgba(255,255,255,.0)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,.16)"/>
       </linearGradient>
       <linearGradient id="cap-${uid}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#fff6df"/>
-        <stop offset="35%" stop-color="${capColor}"/>
-        <stop offset="100%" stop-color="#6f5622"/>
+        <stop offset="0%" stop-color="#fff3d4"/>
+        <stop offset="38%" stop-color="${capColor}"/>
+        <stop offset="100%" stop-color="#5c471d"/>
       </linearGradient>
-      <radialGradient id="sheen-${uid}" cx="35%" cy="25%" r="60%">
-        <stop offset="0%" stop-color="rgba(255,255,255,.7)"/>
+      <radialGradient id="sheen-${uid}" cx="35%" cy="25%" r="65%">
+        <stop offset="0%" stop-color="rgba(255,255,255,.75)"/>
         <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
       </radialGradient>
+      <radialGradient id="sh-${uid}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="rgba(0,0,0,.5)"/>
+        <stop offset="65%" stop-color="rgba(0,0,0,.22)"/>
+        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+      </radialGradient>
+      <clipPath id="clip-${uid}"><rect x="${s.bx}" y="${s.by}" width="${s.bw}" height="${s.bh}" rx="${s.r}"/></clipPath>
     </defs>
 
-    <rect x="${s.bx}" y="${s.by}" width="${s.bw}" height="${s.bh}" rx="${s.r}" fill="url(#${liqId})"/>
-    <rect x="${s.bx}" y="${s.by}" width="${s.bw}" height="${s.bh}" rx="${s.r}" fill="url(#glass-${uid})"/>
-    <rect x="${s.bx}" y="${s.by}" width="${s.bw}" height="${s.bh}" rx="${s.r}" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1.5"/>
-    <rect x="${s.bx+14}" y="${s.by+10}" width="14" height="${s.bh-40}" rx="7" fill="url(#sheen-${uid})" opacity=".8"/>
-    <rect x="${s.bx + s.bw*0.2}" y="${s.by + s.bh*0.42}" width="${s.bw*0.6}" height="${s.bh*0.26}" rx="4" fill="rgba(250,246,238,.9)"/>
-    <text x="150" y="${s.by + s.bh*0.55}" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="15" fill="#1a1611" letter-spacing="1">MAISON NOIR</text>
-    <text x="150" y="${s.by + s.bh*0.63}" text-anchor="middle" font-family="Jost, sans-serif" font-size="7" fill="#8c8272" letter-spacing="2">${p.type.toUpperCase()}</text>
+    <!-- ground shadow -->
+    <ellipse cx="150" cy="356" rx="${s.bw*0.6}" ry="11" fill="url(#sh-${uid})"/>
 
-    <rect x="${neckX}" y="${s.by - neckH + 4}" width="${neckW}" height="${neckH}" rx="4" fill="url(#${liqId})" opacity=".65" stroke="rgba(255,255,255,.2)"/>
+    <!-- glass body base -->
+    <rect x="${s.bx}" y="${s.by}" width="${s.bw}" height="${s.bh}" rx="${s.r}" fill="rgba(236,242,248,.06)"/>
+
+    <!-- liquid + sheen, clipped to the glass shape -->
+    <g clip-path="url(#clip-${uid})">
+      <rect x="${s.bx}" y="${surfaceY}" width="${s.bw}" height="${bottom-surfaceY}" fill="url(#${liqId})"/>
+      <rect x="${s.bx}" y="${bottom-26}" width="${s.bw}" height="26" fill="rgba(0,0,0,.16)"/>
+      <rect x="${s.bx}" y="${surfaceY-1}" width="${s.bw}" height="2.5" fill="rgba(255,255,255,.45)"/>
+      <rect x="${s.bx}" y="${surfaceY+2}" width="${s.bw}" height="6" fill="rgba(255,255,255,.12)"/>
+      <rect x="${s.bx}" y="${s.by}" width="${s.bw}" height="${s.bh}" fill="url(#glass-${uid})"/>
+      <rect x="${s.bx+s.bw*0.15}" y="${s.by+10}" width="${Math.max(5,s.bw*0.045)}" height="${s.bh-26}" rx="3" fill="rgba(255,255,255,.5)"/>
+      <rect x="${s.bx+s.bw*0.83}" y="${s.by+18}" width="2.5" height="${s.bh*0.46}" rx="1.5" fill="rgba(255,255,255,.28)"/>
+      <ellipse cx="${s.bx+s.bw*0.36}" cy="${s.by+s.bh*0.2}" rx="${s.bw*0.24}" ry="${s.bh*0.15}" fill="url(#sheen-${uid})" opacity=".55"/>
+    </g>
+
+    <!-- glass edges -->
+    <rect x="${s.bx}" y="${s.by}" width="${s.bw}" height="${s.bh}" rx="${s.r}" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="1.4"/>
+    <rect x="${s.bx+3}" y="${s.by+2}" width="${s.bw-6}" height="2" rx="1" fill="rgba(255,255,255,.35)"/>
+
+    <!-- label -->
+    <rect x="${labX}" y="${labY}" width="${labW}" height="${labH}" rx="4" fill="rgba(250,247,240,.95)" stroke="rgba(0,0,0,.07)"/>
+    <text x="150" y="${labY+labH*0.42}" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="14" fill="#1a1611" letter-spacing="1.5">MAISON NOIR</text>
+    <rect x="${cx-14}" y="${labY+labH*0.52}" width="28" height="1" fill="#c9a24b"/>
+    <text x="150" y="${labY+labH*0.75}" text-anchor="middle" font-family="Jost, sans-serif" font-size="6.5" fill="#8c8272" letter-spacing="2">${p.type.toUpperCase()}</text>
+
+    <!-- neck + collar -->
+    <rect x="${neckX}" y="${collarY - neckH + 6}" width="${neckW}" height="${neckH}" fill="url(#${liqId})" opacity=".5"/>
+    <rect x="${neckX}" y="${collarY - neckH + 6}" width="${neckW}" height="${neckH}" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+    <rect x="${neckX-3}" y="${collarY-2}" width="${neckW+6}" height="7" rx="2" fill="url(#cap-${uid})" stroke="rgba(255,255,255,.3)" stroke-width="0.8"/>
+
+    <!-- cap -->
     <g class="cap-group">${renderCap(capStyle, uid, cx, capTopY, capW, capH)}</g>
   </svg>`;
 }

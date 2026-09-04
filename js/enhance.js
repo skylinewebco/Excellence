@@ -108,6 +108,28 @@ const STATIC  = new URLSearchParams(location.search).has("static");
 })();
 
 /* ------------------------------------------------------------
+   5. Contact form — client-side confirmation (no backend, no data leaves the browser).
+------------------------------------------------------------ */
+(function contactForm() {
+  const form = document.getElementById("contactForm");
+  if (!form) return;
+  const note = document.getElementById("contactNote");
+  form.querySelectorAll("input,textarea").forEach((el) =>
+    el.addEventListener("blur", () => el.classList.add("touched"))
+  );
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.querySelectorAll("input,textarea").forEach((el) => el.classList.add("touched"));
+      form.reportValidity();
+      return;
+    }
+    if (note) note.hidden = false;
+    form.querySelectorAll("input,textarea").forEach((el) => { el.value = ""; el.classList.remove("touched"); });
+  });
+})();
+
+/* ------------------------------------------------------------
    4. Cart-count pop — a little bump each time the count grows.
 ------------------------------------------------------------ */
 (function cartBump() {

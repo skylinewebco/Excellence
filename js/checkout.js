@@ -112,7 +112,8 @@ function wire(){
       `(${money(grandTotal())}) will be hand-sealed and dispatched. ` +
       (pay==="Cash on Delivery" ? "Please have payment ready on delivery."
         : pay==="Bank Transfer" ? "Bank transfer details have been sent to your email."
-        : "Card payment will be collected on delivery.");
+        : pay.indexOf("Wallet")>=0 ? "Mobile-wallet payment instructions have been sent to your phone and email."
+        : "Card payment details have been sent to your email.");
 
     successBox.classList.add("is-shown");
     successBox.setAttribute("aria-hidden","false");
